@@ -35,7 +35,6 @@ const getUserInfo = () => {
 
 const user = getUserInfo();
 
-
 const CommentSection =() => {
   const [comments, setComments] = useState('');
   
@@ -82,7 +81,7 @@ const CommentSection =() => {
   const handleSubmit = async(event) => {
     event.preventDefault();
     const token=localStorage.getItem('token')
-    const response = await fetch(`http://localhost:3000/api/issues/comments/${id}`, {
+    const response = await fetch(`${serverUrl}/api/issues/comments/${id}`, {
       method: 'POST',
       headers: {
         'Authorization':`Token ${token}`,
@@ -108,7 +107,7 @@ const CommentSection =() => {
     const fetchData = async () => {
       if (id && id!==undefined) {
         console.log("id",id);
-        const response = await fetch(`http://localhost:3000/api/issues/${id}`,{
+        const response = await fetch(`${serverUrl}/api/issues/${id}`,{
           headers:{
             'Authorization':`Token ${token}`
           }
