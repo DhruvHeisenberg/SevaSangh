@@ -44,7 +44,7 @@ const isOfficial = async(req, res, next) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if (user && user.isOfficial) {
+        if (user && user.is_official) {
             return next();
         } else {
             return res.status(403).json({ message: 'Only officials can perform this action' });

@@ -54,6 +54,10 @@ const IssueSchema=new Schema({
     type: Number,
     enum: STATUS_CHOICES,
     default: 1,
+  },
+
+  location:{
+    type:String,
   }
 }, { timestamps: true })
 

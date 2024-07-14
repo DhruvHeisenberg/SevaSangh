@@ -1,4 +1,6 @@
 const User=require("../models/users");
+const Issue=require("../models/issues");
+
 const bcrypt=require("bcryptjs");
 const secretKey=process.env.JWT_SECRET;
 const jwt=require("jsonwebtoken");
@@ -55,4 +57,35 @@ const loginUser=async(req,res)=>{
     }
 }
 
-module.exports={registerUser,loginUser};
+const getUserDetails=async(req,res)=>{
+    try{
+        const user=req.user;
+        if (!user)
+        {
+            return res.status(404).json({message:"User not found"});
+        }
+
+        const issues=await Issue.find({user:user._id});
+
+        const updatedIssues = issues.map(issue => {
+            return {
+                ...issue._doc, // Spread the issue document
+                upvote: issue.likes.length, // Add the upvote property
+                likes: undefined, // Set likes to undefined
+            };
+        });
+
+        const readData={
+            user:user,
+            issues:updatedIssues
+        }
+
+        res.status(200).json(readData);
+    }
+    catch(error)
+    {
+        res.status(500).json({error:error.message});
+    }
+};
+
+module.exports={registerUser,loginUser,getUserDetails};

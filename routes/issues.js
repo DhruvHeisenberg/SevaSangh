@@ -13,6 +13,8 @@ const upload = multer({ storage: storage })
 
 
 router.get('/',listIssues);
+router.post('/like/:id',toggleIssueLike);
+
 router.get("/:id",getIssueDetail);
 router.post('/',upload.single('image'),createIssue);
 router.get('/:id',getIssueDetails);
