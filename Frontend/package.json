@@ -52,6 +52,7 @@
     "@mui/lab": "^5.0.0-alpha.70",
     "@mui/material": "^5.15.9",
     "@mui/styled-engine-sc": "^6.0.0-alpha.16",
+    "@nextui-org/spinner": "^2.0.30",
     "@popperjs/core": "^2.11.2",
     "@react-google-maps/api": "^2.19.2",
     "apexcharts-clevision": "3.28.5",

@@ -1,47 +1,32 @@
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
-
-// ** Icons Imports
-import Poll from 'mdi-material-ui/Poll'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
-
-// ** Custom Components Imports
-import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
-
-// ** Styled Component Import
-import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import WeeklyOverview from '../components/weekly'
-// ** Demo Components Imports
-import Table from 'src/views/dashboard/Table'
-import Trophy from 'src/views/dashboard/Trophy'
-import TotalEarning from 'src/views/dashboard/TotalEarning'
-import StatisticsCard from 'src/views/dashboard/StatisticsCard'
-// import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
-import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
-import SalesByCountries from 'src/views/dashboard/SalesByCountries'
-import PieChart from '../components/PieChart'
+import React from "react";
+import CircularProgress from '@mui/material/CircularProgress';
+import BlankLayout from 'src/@core/layouts/BlankLayout'
+import Box from "@mui/material/Box";
 
 const Dashboard = () => {
+  if (typeof window !== "undefined") {
+  
+    const token= localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/pages/login'
+    }
+    else
+    {
+      window.location.href = '/forum'
+    }
+  }
   return (
-    <ApexChartWrapper>
-      <Grid container spacing={6}>
-        {/* <Grid item xs={12} md={4}>
-          <Trophy />
-        </Grid>*/}
-        <Grid item xs={12} md={12}>
-          <StatisticsCard />
-        </Grid> 
-        <Grid item xs={12} md={6} lg={6}>
-          <WeeklyOverview />
-        </Grid>
-        <Grid item xs={12} md={6} lg={6}>
-          <PieChart />
-        </Grid>
-      </Grid>
-    </ApexChartWrapper>
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      minWidth: '100vw'
+    }}>
+      <CircularProgress/>
+    </Box>
   )
 }
+Dashboard.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
 export default Dashboard
