@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URL)
 .catch((err)=>console.log("Mongo Error",err));
 
 const corsOpts = {
-  origin: ['http://localhost:3000','https://sevasangh.dhruvtripathi.tech','*'],
+  origin: ['http://localhost:3000','https://sevasangh.dhruvtripathi.tech','https://seva-sangh.vercel.app','*'],
 
   methods: [
     'GET',
@@ -28,9 +28,6 @@ const corsOpts = {
     'PUT',
   ],
   credentials:true,
-  allowedHeaders: [
-    'Content-Type',
-  ],
 };
 
 app.use(cors(corsOpts));
