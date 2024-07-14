@@ -19,7 +19,22 @@ mongoose.connect(process.env.MONGO_URL)
 })
 .catch((err)=>console.log("Mongo Error",err));
 
-app.use(cors())
+const corsOpts = {
+  origin: ['http://localhost:3000','https://sevasangh.dhruvtripathi.tech','*'],
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+  ],
+  credentials:true,
+  allowedHeaders: [
+    'Content-Type',
+  ],
+};
+
+app.use(cors(corsOpts));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
