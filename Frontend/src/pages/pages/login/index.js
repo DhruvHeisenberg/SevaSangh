@@ -40,6 +40,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
@@ -70,7 +71,9 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:3000/api/users/login/', {
+    console.log("serverUrl",serverUrl)
+    
+    const response = await fetch(`${serverUrl}/api/users/login/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',        

@@ -3,11 +3,25 @@ const {uploadFile,getObjectSignedUrl}=require("../s3");
 const crypto = require('crypto')
 
 const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
+const apiKey=process.env.REVERSE_GEO_API_KEY;
 
 const listIssues=async(req,res)=>{
     try{
-        const issues=await Issue.find().populate('user');
-        res.status(200).json(issues);
+        const issues = await Issue.find().populate('user');
+        const updatedIssues = issues.map(issue => {
+            return {
+                ...issue._doc, // Spread the issue document
+                upvote: issue.likes.length, // Add the upvote property
+                likes: undefined, // Set likes to undefined
+            };
+        });
+
+        updatedIssues.sort((a, b) => b.upvote - a.upvote); // Sort the issues by upvote
+
+        console.log(updatedIssues); // Log the updated issues to check
+
+        res.status(200).json(updatedIssues); // Send the updated issues in the response
+
     }
     catch(error)
     {
@@ -41,11 +55,28 @@ const createIssue=async(req,res)=>{
             const fileVar = req.file;
             await uploadFile(fileVar?.buffer, imageName, fileVar.mimetype)
         }
-
         const issueData={...req.body,user:userId};
         issueData.image=await getObjectSignedUrl(imageName);
 
+        const lat = req.body.lat;
+        const long = req.body.long;
+        const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${long}&apiKey=${apiKey}`;
+        
+        const requestOptions = {
+            method: 'GET',
+        };
+        
         // console.log("request body ",req.body);
+
+        const response = await fetch(url, requestOptions);
+        if (!response.ok) {
+        res.status(500).json({error:"Reverse Geocoding failed"});
+        }
+        
+
+        const result = await response.json();
+
+        issueData.location=result.features[0].properties.formatted;
 
         const issue=new Issue(issueData);
         issue.save();
@@ -85,7 +116,7 @@ const getIssueDetails=async(req,res)=>{
 }
 
 const toggleIssueLike=async(req,res)=>{
-    const userId=req.user.id;
+    const userId=req.user._id;
 
     try{
         const issue = await Issue.findById(req.params.id);
@@ -95,11 +126,11 @@ const toggleIssueLike=async(req,res)=>{
         if (hasLiked) {
             issue.likes.pull(userId);
             await issue.save();
-            return res.status(200).send({ success: 'like removed' });
+            return res.status(200).send({ success: 'like removed', count: issue.likes.length });
         } else {
             issue.likes.push(userId);
             await issue.save();
-            return res.status(200).send({ success: 'like added' });
+            return res.status(200).send({ success: 'like added', count: issue.likes.length });
         }
     }
     catch(error)

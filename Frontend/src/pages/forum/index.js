@@ -13,6 +13,8 @@ import {
   Typography,
 } from '@mui/material';
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
+
 function Forum() {
   const [filter, setFilter] = useState({
     upvotes: 0,
@@ -33,7 +35,7 @@ useEffect(() => {
   const fetchData=async()=>{
   const token = localStorage.getItem('token');
   try {
-    const response = await fetch('http://localhost:3000/api/issues/', {
+    const response = await fetch(`${serverUrl}/api/issues/`, {
       headers: {
         'Authorization': `Token ${token}`,
       }

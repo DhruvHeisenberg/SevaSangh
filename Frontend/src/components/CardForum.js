@@ -21,6 +21,8 @@ import { left } from '@popperjs/core';
 import styles from './CardForum.module.css'
 import Link from 'next/link';
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
+
 // Styled Box component
 const StyledBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
@@ -31,14 +33,32 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 const CardMembership = ({ issues = [] }) => {
   const [comments, setComments] = React.useState({});
-  const [upvoteCounts, setUpvoteCounts] = React.useState({});
+  const [upvoteCounts, setUpvoteCounts] = React.useState(issues);
 
-  const handleUpvote = (issueId) => {
-    // Logic to handle upvote action
-    setUpvoteCounts(prevCounts => ({
-      ...prevCounts,
-      [issueId]: (prevCounts[issueId] || 0) + 1,
-    }));
+  const handleUpvote = (issueId,index) => {
+     const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${serverUrl}/api/issues/like/`+issueId, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        let newData=[...issues];
+        newData[index].upvote=jsonData.count;
+        setUpvoteCounts(newData);
+      } catch (error) {
+
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  
   };
 
   const handleSubmit = (event, issueId) => {
@@ -84,8 +104,8 @@ const CardMembership = ({ issues = [] }) => {
   return (
     <>
       {issues.map((issue, index) => (
-        <Link href={`/post-page?id=${issue._id}`} key={index}>
-        <Card sx={{ marginBottom: 2 }}>
+        
+        <Card sx={{ marginBottom: 2 }} key={index}>
           <Grid container spacing={6}>
             <Grid item xs={12} sm={7}>
               
@@ -111,7 +131,7 @@ const CardMembership = ({ issues = [] }) => {
     <StyledBox>
       <Box sx={{ mb: 6.75, display: 'flex', alignItems: 'center' }}>
         <LockOpenOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
-        <Typography variant='body2'>LOCATION: Bhupindra Road, Patiala</Typography>
+        <Typography variant='body2'>LOCATION: {issue.location}</Typography>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <AccountOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
@@ -121,9 +141,9 @@ const CardMembership = ({ issues = [] }) => {
   </Grid>
   <Grid item xs={12} sm={7}>
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-        <Button onClick={() => handleUpvote(index)} color="primary" sx={{ marginRight: 1 }}>
+        <Button onClick={() => handleUpvote(issue._id,index)} color="primary" sx={{ marginRight: 1 }}>
           <StarOutline sx={{ color: 'primary.main', variant: 'outlined', alignSelf: left, marginTop:0 }} fontSize='small' />
-          <Typography variant='body2' sx={{marginLeft:2, marginTop:0}}>Upvote {upvoteCounts[index] || issue.upvoteCount}</Typography>
+          <Typography variant='body2' sx={{marginLeft:2, marginTop:0}}>Upvote {upvoteCounts[index]?.upvote}</Typography>
         </Button>
         
       <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
@@ -154,16 +174,16 @@ const CardMembership = ({ issues = [] }) => {
                   padding: theme => `${theme.spacing(18, 5, 16)} !important`
                 }}
               >
-                
+                <Link href={`/post-page?id=${issue._id}`} key={index}>
                 <Box>
                   <Image className={styles.img1} src={`${issue.image}`} alt='card' width={'350%'} height={'250%'}/>
                 </Box> 
+                </Link>
                 
               </CardContent>
             </Grid>
           </Grid>
         </Card>
-        </Link>
       ))}
     </>
   );

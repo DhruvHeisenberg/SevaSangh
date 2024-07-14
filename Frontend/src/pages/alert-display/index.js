@@ -8,7 +8,6 @@ import TableStickyHeader from '../../components/alert';
 
 const AlertDisplay= () => {
   return (
-
         <Card>
           <CardHeader title='Alert Display' titleTypographyProps={{ variant: 'h6' }} />
           <TableStickyHeader />
@@ -16,5 +15,4 @@ const AlertDisplay= () => {
 
 )
 };
-
 export default AlertDisplay;

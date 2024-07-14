@@ -39,7 +39,6 @@ const Dashboard = () => {
         <Grid item xs={12} md={6} lg={6}>
           <PieChart />
         </Grid>
-
       </Grid>
     </ApexChartWrapper>
   )

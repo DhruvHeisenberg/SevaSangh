@@ -20,6 +20,7 @@ import MapComponent from 'src/components/MapComponent';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
 
 // Import styles for third-party libraries
 import 'react-datepicker/dist/react-datepicker.css';
@@ -43,11 +44,11 @@ const Alert = () => {
     const data = {
       "title": title,
       "area": "india",
-      "discription": description,
+      "description": description,
       "duration": "01 01:05:00"
   };
     const token=localStorage.getItem('token')
-    const response = await fetch('http://localhost:3000/api/alerts/create/', {
+    const response = await fetch(`${serverUrl}/api/alerts/create/`, {
       method: 'POST',
       headers: {
         'Authorization': `Token ${token}`,

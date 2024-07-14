@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
+
 const EditIssueStatus = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const handleChange = (event) => {
@@ -20,7 +22,7 @@ const EditIssueStatus = () => {
   const handleSubmit = async () => {
     try {
       const token=localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3000/api/issues/update/${id}`, {
+      const response = await fetch(`${serverUrl}/api/issues/update/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

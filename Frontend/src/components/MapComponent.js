@@ -3,6 +3,8 @@ import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
 const MapComponent = () => {
+  console.log(apiKey);
+  
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleMapClick = (event) => {

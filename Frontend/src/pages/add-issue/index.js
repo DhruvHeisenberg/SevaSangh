@@ -18,7 +18,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
 const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
 
 // Assuming you have a component for displaying a map
 
@@ -66,7 +66,7 @@ const AddIssueForm = () => {
     formData.append('long', selectedLocation.lng);
 
     const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/issues/', {
+      const response = await fetch(`${serverUrl}/api/issues/`, {
         method: 'POST',
         headers: {
           'Authorization':`Token ${token}`,
@@ -77,6 +77,7 @@ const AddIssueForm = () => {
 
       if (response.ok) {
         const data = await response.json();
+        window.location.href = `/forum/`;
         console.log(response)
       } else {
         console.error('Error occurred:', response);

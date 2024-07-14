@@ -19,6 +19,8 @@ import Button from '@mui/material/Button';
 import Garbage from '../../public/images/rimjhim/garbage.png';
 import ColorsTimeline from './Timeline';
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL;
+
 // Styled Box component
 const StyledBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
@@ -42,6 +44,40 @@ const CommentSection =() => {
   const [issue, setIssue] = useState([]);
   const [admin,setAdmin]=useState(true);
   const { id } =router.query;
+  const [oldComments, setOldComments] = useState([]); 
+  const [refetchData, setRefetchData] = useState(true);
+  const [loading1,setLoading1]=useState(true);
+  const [loading2,setLoading2]=useState(true);
+
+  useEffect(() => {
+    const token=localStorage.getItem('token')
+    if(!refetchData) return;
+
+    setLoading1(true);
+
+    const fetchData = async () => {
+        console.log(router.query);
+        if (id && id!==undefined) {
+        const response = await fetch(`${serverUrl}/api/issues/comments/${id}`,{
+          headers:{
+            'Authorization':`Token ${token}`
+          }
+        });
+        setLoading1(false);
+        if (response.ok) {
+          const data = await response.json();
+          setOldComments(data.data);
+          setRefetchData(false)
+        }
+        else 
+        {
+          setError('Failed to fetch post data');
+        }
+      }
+    };
+
+    fetchData();
+  }, [id,refetchData]);
 
   const handleSubmit = async(event) => {
     event.preventDefault();
@@ -62,10 +98,12 @@ const CommentSection =() => {
     }
     console.log(comments)
     setComments('');
+    setRefetchData(true);
   };
 
   useEffect(() => {
     const token=localStorage.getItem('token')
+    setLoading2(true)
     admin=localStorage.getItem('admin')
     const fetchData = async () => {
       if (id && id!==undefined) {
@@ -75,6 +113,7 @@ const CommentSection =() => {
             'Authorization':`Token ${token}`
           }
         });
+        setLoading2(false)
         if (response.ok) {
           const data = await response.json();
             setIssue(data.data);
@@ -89,7 +128,8 @@ const CommentSection =() => {
     fetchData();
   }, [id]); 
 
-  if(issue==null || image==null)
+  // console.log(loading);
+  if(issue==null || image==null || loading1 || loading2)
   return(<p>Loading...</p>)
   else
   return (
@@ -111,14 +151,14 @@ const CommentSection =() => {
             </Typography>
             <Typography variant='body2'>{issue.description}</Typography>
             <Box sx={{marginTop:5}}>
-              <Image src={(image)?image:Garbage} width={'400%'} height={'300%'} alignItems = {'center'} alt='card' /></Box>
+              <Image src={image || Garbage} width={'400%'} height={'300%'} alt='card' /></Box>
             <Divider sx={{ marginTop: 6.5, marginBottom: 6.75 }} />
             <Grid container spacing={4}>
               <Grid item xs={12} sm={5}>
                 <StyledBox>
                   <Box sx={{ mb: 6.75, display: 'flex', alignItems: 'center' }}>
                     <LockOpenOutline sx={{ color: 'psrimary.main', marginRight: 2.75 }} fontSize='small' />
-                    <Typography variant='body2'>LOCATION: Bhupindra Road, Patiala</Typography>
+                    <Typography variant='body2'>LOCATION: {issue.location}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <AccountOutline sx={{ color: 'primary.main', marginRight: 2.75 }} fontSize='small' />
@@ -147,13 +187,13 @@ const CommentSection =() => {
             <Typography variant='h6' sx={{ marginTop: 3.5 }}>
         Comments
       </Typography>
-      {issue.comments && issue.comments.length > 0 ? (
-        issue.comments.map((comment, index) => (
+      {oldComments && oldComments.length > 0 ? (
+        oldComments.map((comment, index) => (
           <Box key={index} sx={{ marginTop: 1.5 }}>
             <Typography variant='body2' sx={{ fontWeight: 700 }}>
-              {comment.username}:
+              {comment.user.name}:
             </Typography>
-            <Typography variant='body2'>{comment.text}</Typography>
+            <Typography variant='body2'>{comment.content}</Typography>
           </Box>
         ))
       ) : (

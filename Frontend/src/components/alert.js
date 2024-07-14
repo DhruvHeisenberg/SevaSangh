@@ -11,6 +11,8 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 
+const serverUrl=process.env.NEXT_PUBLIC_SERVER_URL
+
 const TableStickyHeader = () => {
   // ** States
   const [data, setData] = useState(null);
@@ -22,7 +24,7 @@ const TableStickyHeader = () => {
     const fetchData = async () => {
       try {
         const token=localStorage.getItem('token')
-        const response = await fetch('http://localhost:3000/api/alerts',{
+        const response = await fetch(`${serverUrl}/api/alerts`,{
           headers:{
             'Authorization':`Token ${token}`
           }
@@ -47,7 +49,7 @@ const TableStickyHeader = () => {
   if(data!=null){
     console.log(data.data)
     data.data.map(e=>{
-      rows.push(createData(e.title,e.discription))
+      rows.push(createData(e.title,e.description))
     })
   }
   const [page, setPage] = useState(0)
